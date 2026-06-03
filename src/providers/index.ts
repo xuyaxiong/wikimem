@@ -9,6 +9,7 @@ import type {
 import { ClaudeProvider } from './claude.js';
 import { OpenAIProvider } from './openai.js';
 import { OllamaProvider } from './ollama.js';
+import { VLLMProvider } from './vllm.js';
 import type { UserConfig } from '../core/config.js';
 import { runWithClaudeCode, isClaudeCodeAvailable, getClaudeCodeCostInfo } from '../core/claude-code.js';
 
@@ -66,6 +67,7 @@ export function normalizeProviderId(name: string): ProviderChainId | null {
   if (n === 'claude' || n === 'anthropic') return 'claude';
   if (n === 'openai' || n === 'gpt') return 'openai';
   if (n === 'ollama' || n === 'local') return 'ollama';
+  if (n === 'vllm') return 'vllm';
   return null;
 }
 
@@ -93,6 +95,10 @@ function resolveOllamaBaseUrl(config: ProviderChainConfig): string | undefined {
   return config.keys?.ollama_url ?? process.env['OLLAMA_BASE_URL'];
 }
 
+function resolveVllmBaseUrl(config: ProviderChainConfig): string | undefined {
+  return config.keys?.vllm_url ?? process.env['VLLM_BASE_URL'];
+}
+
 function shouldIncludeInChain(id: ProviderChainId, config: ProviderChainConfig): boolean {
   if (id === 'claude') return !!resolveAnthropicKey(config);
   if (id === 'openai') return !!resolveOpenaiKey(config);
@@ -103,6 +109,7 @@ function createConcreteProvider(id: ProviderChainId, config: ProviderChainConfig
   const model = config.model;
   if (id === 'claude') return new ClaudeProvider(model, resolveAnthropicKey(config));
   if (id === 'openai') return new OpenAIProvider(model, resolveOpenaiKey(config));
+  if (id === 'vllm') return new VLLMProvider(model, resolveVllmBaseUrl(config));
   return new OllamaProvider(model, resolveOllamaBaseUrl(config));
 }
 
@@ -174,6 +181,8 @@ export function createProvider(
     case 'ollama':
     case 'local':
       return new OllamaProvider(options?.model, options?.baseUrl);
+    case 'vllm':
+      return new VLLMProvider(options?.model, options?.baseUrl, options?.apiKey);
     case 'claude-code':
     case 'cc':
       return new ClaudeCodeProvider();
@@ -184,6 +193,7 @@ export function createProvider(
           '  claude       — Anthropic (requires ANTHROPIC_API_KEY)\n' +
           '  openai       — OpenAI (requires OPENAI_API_KEY)\n' +
           '  ollama       — Local models (requires Ollama running)\n' +
+          '  vllm         — vLLM (requires vLLM server running)\n' +
           '  claude-code  — Claude Code CLI (uses your subscription)\n' +
           'Set in config.yaml:  provider: claude',
       );
@@ -218,10 +228,17 @@ export function createProviderFromUserConfig(
   const model = opts?.model ?? userConfig.model;
 
   if (opts?.providerOverride) {
+    const overrideName = opts.providerOverride.toLowerCase();
+    let baseUrl: string | undefined;
+    if (overrideName === 'ollama' || overrideName === 'local') {
+      baseUrl = userConfig.providers?.keys?.ollama_url ?? process.env['OLLAMA_BASE_URL'];
+    } else if (overrideName === 'vllm') {
+      baseUrl = userConfig.providers?.keys?.vllm_url ?? process.env['VLLM_BASE_URL'];
+    }
     return createProvider(opts.providerOverride, {
       model,
       apiKey: userConfig.api_key,
-      baseUrl: userConfig.providers?.keys?.ollama_url ?? process.env['OLLAMA_BASE_URL'],
+      baseUrl,
     });
   }
 
@@ -243,13 +260,22 @@ export function createProviderFromUserConfig(
         anthropic: block.keys?.anthropic ?? legacy.anthropic,
         openai: block.keys?.openai ?? legacy.openai,
         ollama_url: block.keys?.ollama_url,
+        vllm_url: block.keys?.vllm_url,
       },
       model,
     });
   }
 
-  return createProvider(userConfig.provider ?? 'claude', {
+  const providerName = userConfig.provider ?? 'claude';
+  let baseUrl: string | undefined;
+  if (providerName === 'vllm') {
+    baseUrl = userConfig.vllm_base_url ?? process.env['VLLM_BASE_URL'];
+  } else if (providerName === 'ollama' || providerName === 'local') {
+    baseUrl = userConfig.providers?.keys?.ollama_url ?? process.env['OLLAMA_BASE_URL'];
+  }
+  return createProvider(providerName, {
     model,
-    apiKey: userConfig.api_key,
+    apiKey: providerName === 'vllm' ? (userConfig.vllm_api_key ?? userConfig.api_key) : userConfig.api_key,
+    baseUrl,
   });
 }

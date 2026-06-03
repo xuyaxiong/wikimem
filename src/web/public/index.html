@@ -10436,6 +10436,9 @@
                       </option>
                       <option value="gpt-4o">GPT-4o</option>
                       <option value="gpt-4o-mini">GPT-4o Mini</option>
+                      <option value="vllm/qwen3">vLLM — Qwen3</option>
+                      <option value="vllm/qwen2.5">vLLM — Qwen 2.5</option>
+                      <option value="vllm/deepseek-v2">vLLM — DeepSeek V2</option>
                     </select>
                   </div>
                   <div class="query-form">
@@ -16766,6 +16769,7 @@
               openai: ["gpt-4o","gpt-4o-mini","gpt-4-turbo","gpt-3.5-turbo"],
               google: ["gemini-2.0-flash","gemini-1.5-pro","gemini-1.5-flash"],
               ollama: ["llama3.1","qwen2.5","mistral","phi3"],
+              vllm: ["qwen3","qwen2.5","deepseek-v2","deepseek-coder-v2"],
               "claude-code": [],
             };
             const modelOpts = (modelsByCompany[company] || []).map(m =>
@@ -16779,6 +16783,7 @@
                 <option value="openai" ${company==="openai"?"selected":""}>OpenAI</option>
                 <option value="google" ${company==="google"?"selected":""}>Google</option>
                 <option value="ollama" ${company==="ollama"?"selected":""}>Ollama (local)</option>
+                <option value="vllm" ${company==="vllm"?"selected":""}>vLLM</option>
                 <option value="claude-code" ${company==="claude-code"?"selected":""}>Claude Code</option>
               </select>
               <div id="${id}-model-row" style="display:${isCC?"none":"block"}">
@@ -16789,7 +16794,7 @@
                 <label class="settings-label">API Key</label>
                 <div class="settings-row">
                   <div class="settings-group" style="margin-bottom:0;flex:1">
-                    <input class="settings-input" id="${id}-apikey" type="password" value="" placeholder="${company==="anthropic"?"sk-ant-...":company==="openai"?"sk-...":company==="google"?"AIza...":"(not required for Ollama)"}" />
+                    <input class="settings-input" id="${id}-apikey" type="password" value="" placeholder="${company==="anthropic"?"sk-ant-...":company==="openai"?"sk-...":company==="google"?"AIza...":company==="vllm"?"sk-... (or set vllm_api_key in config)":"(not required for Ollama)"}" />
                   </div>
                   <button class="settings-btn" onclick="testProviderKey('${id}','${company}')">Test</button>
                 </div>
@@ -16991,6 +16996,8 @@
                   <option value="gpt-4o-mini">GPT-4o mini</option>
                   <option value="ollama/llama3.1">Ollama — Llama 3.1</option>
                   <option value="ollama/qwen2.5">Ollama — Qwen 2.5</option>
+                  <option value="vllm/qwen3">vLLM — Qwen3</option>
+                  <option value="vllm/qwen2.5">vLLM — Qwen 2.5</option>
                 </select>
                 <div style="font-size:11px;color:var(--text-muted);margin-top:4px">Choose which model scores and improves pages</div>
               </div>
@@ -19473,6 +19480,14 @@
 
         const model = modelSelect?.value || "claude-sonnet-4-20250514";
 
+        // Parse vllm/ prefix into provider + model
+        let sendProvider;
+        let sendModel = model;
+        if (model.startsWith("vllm/")) {
+          sendProvider = "vllm";
+          sendModel = model.slice(5);
+        }
+
         // Build thread: show prior turns + new question
         const threadEl = result.querySelector(".query-thread") || document.createElement("div");
         threadEl.className = "query-thread";
@@ -19544,7 +19559,7 @@
           const res = await fetch("/api/query-stream", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ question: q, model }),
+            body: JSON.stringify({ question: q, provider: sendProvider, model: sendModel }),
             signal: _queryAbortController.signal,
           });
 

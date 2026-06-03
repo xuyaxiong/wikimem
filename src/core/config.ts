@@ -16,6 +16,7 @@ export interface ProvidersYamlConfig {
     anthropic?: string;
     openai?: string;
     ollama_url?: string;
+    vllm_url?: string;
   };
 }
 
@@ -24,6 +25,9 @@ export interface UserConfig {
   provider?: string;
   model?: string;
   api_key?: string;
+  /** vLLM-specific settings (used with provider: vllm) */
+  vllm_base_url?: string;
+  vllm_api_key?: string;
   /** Per-area model selection (UXO-059): different models for ingestion, querying, observer */
   ingest_model?: string;
   ingest_api_key?: string;

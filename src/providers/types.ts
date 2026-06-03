@@ -37,13 +37,15 @@ export interface ProviderConfig {
 }
 
 /** Canonical IDs used in fallback chains */
-export type ProviderChainId = 'claude' | 'openai' | 'ollama';
+export type ProviderChainId = 'claude' | 'openai' | 'ollama' | 'vllm';
 
 export interface ProviderChainKeys {
   anthropic?: string;
   openai?: string;
   /** Base URL for Ollama (e.g. http://localhost:11434) */
   ollama_url?: string;
+  /** Base URL for vLLM (e.g. http://localhost:8000) */
+  vllm_url?: string;
 }
 
 /**

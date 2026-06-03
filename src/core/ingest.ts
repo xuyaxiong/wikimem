@@ -558,10 +558,14 @@ function buildIngestPrompt(
   indexContent: string,
   userInstructions: string,
 ): string {
+  // Strip `related` frontmatter examples from the schema — they contain
+  // [[wikilinks]] that the LLM reproduces as unquoted YAML values, which
+  // breaks js-yaml when those values end up in a page's frontmatter block.
+  const cleanSchema = schema.replace(/^related:.*$/gm, '').replace(/\n{3,}/g, '\n\n');
   return `# Task: Ingest Source Document
 
 ## Schema (AGENTS.md)
-${schema}
+${cleanSchema}
 
 ## Current Wiki Index
 ${indexContent}
@@ -615,13 +619,23 @@ function parseLLMPages(response: string): ParsedPage[] {
 
   // If no structured pages found, create a single source page
   if (pages.length === 0 && response.trim().length > 0) {
+    // Strip any leading YAML frontmatter (e.g. when LLM produces --- blocks
+    // instead of the TITLE:/CATEGORY: format) to avoid double-frontmatter
+    // files that break subsequent reads.
+    let cleanContent = response;
+    if (cleanContent.trimStart().startsWith('---')) {
+      const fmEnd = cleanContent.indexOf('\n---', 3);
+      if (fmEnd > 0) {
+        cleanContent = cleanContent.slice(fmEnd + 4).trim();
+      }
+    }
     pages.push({
       title: 'Untitled Source',
       category: 'sources',
       tags: [],
       summary: 'Auto-generated source page',
       tldr: '',
-      content: response,
+      content: cleanContent,
     });
   }
 

@@ -19,7 +19,7 @@ export const PROMPT_STEP_LABELS: Record<string, string> = {
 
 export const DEFAULT_PROMPTS: Record<string, string> = {
   'llm-compile-system':
-    'You are a wiki maintainer. You process source documents and produce structured wiki pages in markdown with YAML frontmatter and [[wikilinks]]. Follow the schema in AGENTS.md exactly. Be concise, factual, and thorough in cross-referencing.',
+    'You are a wiki maintainer. You process source documents and produce structured wiki pages in markdown with [[wikilinks]]. Follow the schema in AGENTS.md exactly. Be concise, factual, and thorough in cross-referencing.',
 
   'llm-compile-user': `Process this source document and produce wiki pages. For each page, output in this exact format:
 

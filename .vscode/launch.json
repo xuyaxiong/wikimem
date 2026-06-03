@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "wikimem serve (tsx, 零编译)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/tsx/dist/cli.mjs",
+      "args": ["watch", "${workspaceFolder}/src/index.ts", "serve", "--vault", "${input:testVault}"],
+      "cwd": "${workspaceFolder}",
+      "sourceMaps": true,
+      "restart": true,
+      "autoAttachChildProcesses": true,
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    }
+  ],
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "testVault",
+      "description": "Vault path",
+      "default": "C:\\Users\\xuyaxiong\\git\\test-wiki\\my-test-wiki01"
+    }
+  ]
+}

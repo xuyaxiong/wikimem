@@ -20,6 +20,7 @@
   ],
   "scripts": {
     "build": "tsc && chmod +x dist/index.js && rm -rf dist/web/public && cp -r src/web/public dist/web/ 2>/dev/null; cp src/core/mcp-client/known-servers.json dist/core/mcp-client/known-servers.json 2>/dev/null || true",
+    "build:win": "node scripts/build.mjs",
     "dev": "tsc --watch",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -73,6 +74,7 @@
     "@types/node-cron": "^3.0.11",
     "@types/pdf-parse": "^1.1.5",
     "playwright": "^1.59.1",
+    "tsx": "^4.22.4",
     "typescript": "^5.7.0",
     "vitest": "^3.0.0"
   }

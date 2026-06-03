@@ -1243,10 +1243,34 @@ export function createServer(vaultRoot: string, port: number): void {
       send({ type: 'phase', phase: 'composing', message: 'Composing answer...' });
 
       // Detect provider from model name
+      const isVllm = providerName === 'vllm' || modelName?.startsWith('vllm/');
       const isOpenAI = modelName?.startsWith('gpt-') || providerName === 'openai';
       const isOllama = providerName === 'ollama';
 
-      if (isOpenAI) {
+      if (isVllm) {
+        // vLLM streaming (OpenAI-compatible)
+        const vllmBaseUrl = userConfig.vllm_base_url ?? process.env['VLLM_BASE_URL'] ?? 'http://localhost:8000';
+        const vllmApiKey = userConfig.vllm_api_key ?? process.env['VLLM_API_KEY'] ?? 'not-required';
+        const vllmModel = modelName ?? userConfig.model ?? 'qwen3';
+        const { default: OpenAI } = await import('openai');
+        const client = new OpenAI({
+          apiKey: vllmApiKey,
+          baseURL: `${vllmBaseUrl}/v1`,
+        });
+        const stream = await client.chat.completions.create({
+          model: vllmModel,
+          max_tokens: 4096,
+          stream: true,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: prompt },
+          ],
+        });
+        for await (const chunk of stream) {
+          const delta = chunk.choices[0]?.delta?.content;
+          if (delta) send({ type: 'token', token: delta });
+        }
+      } else if (isOpenAI) {
         // OpenAI streaming
         const apiKey = userConfig.query_api_key ?? userConfig.api_key ?? process.env['OPENAI_API_KEY'];
         if (!apiKey) throw new Error('OpenAI API key not found. Add it in Settings.');

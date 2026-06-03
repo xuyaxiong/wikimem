@@ -239,10 +239,15 @@ export function getVaultStats(config: VaultConfig): VaultStats {
 }
 
 export function slugify(text: string): string {
-  return text
+  const slug = text
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
+    // Replace any run of non-alphanumeric chars (including underscores) with dash.
+    // For CJK and other non-Latin scripts, keep the actual characters — only
+    // strip characters that are neither letters/numbers nor Combining Marks.
+    .replace(/[^\p{L}\p{N}]+/gu, '-')
     .replace(/^-|-$/g, '');
+  // Fallback for all-ASCII-punctuation inputs (e.g. purely CJK punctuation)
+  return slug || 'page';
 }
 
 export function toWikilink(title: string): string {
