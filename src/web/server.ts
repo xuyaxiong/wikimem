@@ -4578,7 +4578,7 @@ export function createServer(vaultRoot: string, port: number): void {
 
   // Security: bind to 127.0.0.1 only — prevents other hosts on the network from
   // overwriting tokens via POST /api/auth/tokens/:provider (no auth check there).
-  app.listen(port, '127.0.0.1', () => {
+  app.listen(port, '0.0.0.0', () => {
     console.log(`\n  wikimem web UI running at http://localhost:${port}`);
     console.log(`  Vault: ${vaultRoot}\n`);
   });
