@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  # ---- 知识库 1：我的个人知识库 ----
+  wikimem-t1:
+    build: .
+    image: wikimem-t:latest    # 构建后使用此镜像名
+    container_name: wikimem-t1
+    restart: unless-stopped
+    volumes:
+      - ./wiki_data/t1_wiki/raw:/app/raw
+      - ./wiki_data/t1_wiki/wiki:/app/wiki
+      - ./wiki_data/t1_wiki/AGENTS.md:/app/AGENTS.md
+      - ./wiki_data/t1_wiki/config.yaml:/app/config.yaml
+    ports:
+      - "8141:3141"
+
+  # ---- 知识库 2：我的工作知识库 ----
+  wikimem-t2:
+    image: wikimem-t:latest
+    container_name: wikimem-t2
+    restart: unless-stopped
+    volumes:
+      - ./wiki_data/t2_wiki/raw:/app/raw
+      - ./wiki_data/t2_wiki/wiki:/app/wiki
+      - ./wiki_data/t2_wiki/AGENTS.md:/app/AGENTS.md
+      - ./wiki_data/t2_wiki/config.yaml:/app/config.yaml
+    ports:
+      - "8142:3141"
+
+networks:
+  default:
+    driver: bridge
