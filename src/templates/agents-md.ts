@@ -172,8 +172,9 @@ Format for each entry:
 
 ## 6. Style Guide
 
-Write in **Wikipedia style**: neutral point of view (NPOV), encyclopedic tone, third person.
+**Language: Chinese (中文).** Write all wiki content in Chinese. Use Wikipedia style: neutral point of view (NPOV), encyclopedic tone, third person.
 
+- **Chinese language.** All page content, titles, summaries, tags, and TLDRs must be written in Chinese. Only keep proper nouns (person names, place names) in their original form.
 - **Concise.** Prefer one precise sentence over three vague ones.
 - **Factual.** Every claim should be attributable to a source (cite with \`[[Source Page]]\` or inline).
 - **No opinion.** Present facts and analysis; avoid subjective language.

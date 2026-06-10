@@ -19,16 +19,16 @@ export const PROMPT_STEP_LABELS: Record<string, string> = {
 
 export const DEFAULT_PROMPTS: Record<string, string> = {
   'llm-compile-system':
-    'You are a wiki maintainer. You process source documents and produce structured wiki pages in markdown with [[wikilinks]]. Follow the schema in AGENTS.md exactly. Be concise, factual, and thorough in cross-referencing.',
+    'You are a wiki maintainer. You process source documents and produce structured wiki pages in markdown with [[wikilinks]]. Follow the schema in AGENTS.md exactly. Be concise, factual, and thorough in cross-referencing.\n\nIMPORTANT: Write all page content in Chinese (中文). Titles, summaries, TLDR, tags, and body text must all be in Chinese unless the source document is in another language.',
 
-  'llm-compile-user': `Process this source document and produce wiki pages. For each page, output in this exact format:
+  'llm-compile-user': `Process this source document and produce wiki pages. Write ALL content in Chinese (中文). For each page, output in this exact format:
 
 \`\`\`page
 TITLE: Page Title
 CATEGORY: sources | entities | concepts | syntheses
 TAGS: tag1, tag2, tag3
 SUMMARY: One-line summary for the index
-TLDR: One or two sentences capturing the single most important thing to know about this page. Should be standalone — readable without any other context.
+TLDR: One or two sentences capturing the single most important thing to know about this page.
 ---
 Page content in markdown with [[wikilinks]] to other pages.
 \`\`\`
