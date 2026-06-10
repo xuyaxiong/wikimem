@@ -1240,7 +1240,7 @@ export function createServer(vaultRoot: string, port: number): void {
 
       const indexContent = existsSync(config.indexPath) ? readFileSync(config.indexPath, 'utf-8') : '';
       const prompt = `# Query Against Wiki\n\n## Question\n${question}\n\n## Wiki Index\n${indexContent.substring(0, 3000)}\n\n## Relevant Pages\n${pageContents.join('\n\n---\n\n').substring(0, 20000)}\n\n## Instructions\nAnswer the question based on the wiki content above. Use [[wikilinks]] when referencing pages. Cite your sources inline using numbered references like [1], [2] etc., matching the order sources appear. If the wiki doesn't contain enough information, say so clearly.`;
-      const systemPrompt = 'You are a knowledgeable wiki assistant. Answer questions by synthesizing information from the wiki pages provided. Always cite sources using [[wikilinks]] and inline numbered references [1], [2] etc. Be concise and accurate.';
+      const systemPrompt = '你是一个知识库助手。请根据提供的 wiki 页面内容回答问题。引用来源时使用 [[wikilinks]] 和内联编号引用 [1]、[2] 等格式。回答要简洁准确。\n\n重要：全程使用中文思考和回答。';
 
       send({ type: 'phase', phase: 'composing', message: 'Composing answer...' });
 
