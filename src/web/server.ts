@@ -185,8 +185,8 @@ export function createServer(vaultRoot: string, port: number): void {
         res.status(400).json({ error: 'Missing title or slug' });
         return;
       }
-      if (!/^[a-zA-Z0-9_-]+$/.test(slug)) {
-        res.status(400).json({ error: 'Invalid slug — only alphanumeric, hyphens, and underscores allowed' });
+      if (!/^[\p{L}\p{N}_-]+$/u.test(slug)) {
+        res.status(400).json({ error: 'Invalid slug — only letters, numbers, hyphens, and underscores allowed' });
         return;
       }
       const dest = join(config.wikiDir, `${slug}.md`);

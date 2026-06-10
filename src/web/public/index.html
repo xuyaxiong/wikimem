@@ -19649,10 +19649,12 @@
           // Answer action bar
           const actionsEl = document.createElement("div");
           actionsEl.className = "query-actions";
+          const _encAnswer = encodeURIComponent(rawAnswer).replace(/'/g, "%27");
+          const _encQuestion = encodeURIComponent(q).replace(/'/g, "%27");
           actionsEl.innerHTML =
-            `<button class="query-action-btn" id="qa-copy" onclick="queryActionCopy(this,'${esc(rawAnswer.replace(/'/g,"\\'"))}')">Copy</button>` +
-            `<button class="query-action-btn" onclick="queryActionSavePage('${esc(q.replace(/'/g,"\\'"))}','${esc(rawAnswer.replace(/'/g,"\\'"))}')">Save as page</button>` +
-            `<button class="query-action-btn" onclick="submitQuery('Please expand and improve the previous answer with more detail and examples.')">Refine</button>`;
+            `<button class="query-action-btn" id="qa-copy" onclick="queryActionCopy(this,'${_encAnswer}')">复制</button>` +
+            `<button class="query-action-btn" onclick="queryActionSavePage('${_encQuestion}','${_encAnswer}')">保存为页面</button>` +
+            `<button class="query-action-btn" onclick="submitQuery('Please expand and improve the previous answer with more detail and examples.')">优化</button>`;
           streamBody.parentElement.appendChild(actionsEl);
 
         } catch (err) {
@@ -19681,6 +19683,7 @@
       }
 
       function queryActionCopy(btn, text) {
+        text = decodeURIComponent(text);
         navigator.clipboard.writeText(text).then(() => {
           btn.textContent = "Copied!";
           btn.classList.add("success");
@@ -19698,19 +19701,28 @@
 
       async function queryActionSavePage(question, answer) {
         try {
+          question = decodeURIComponent(question);
+          answer = decodeURIComponent(answer)
+            .replace(/<think>[\s\S]*?<\/think>/gi, '')
+            .replace(/\u003cthink\u003e[\s\S]*?\u003c\/think\u003e/gi, '')
+            .replace(/```think[\s\S]*?```/gi, '')
+            .trim();
           const title = question.length > 60 ? question.substring(0, 60) + "..." : question;
+          const slug = title.trim().toLowerCase()
+            .replace(/[^\p{L}\p{N}]+/gu, '-')
+            .replace(/^-|-$/g, '') || 'page';
           const content = `# ${title}\n\n> *Synthesized answer*\n\n${answer}`;
           const res = await fetch("/api/pages", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ title, content }),
+            body: JSON.stringify({ title, slug, content }),
           });
           const data = await res.json().catch(() => ({}));
-          if (data.slug) {
+          if (data.status === "created" || data.slug) {
             _queryFlash(`✓ Saved as "${title}"`);
             loadTree();
           } else {
-            _queryFlash("Couldn't save page");
+            _queryFlash("Couldn't save page: " + (data.error || "unknown"));
           }
         } catch { _queryFlash("Save failed"); }
       }
