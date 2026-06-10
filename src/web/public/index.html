@@ -19470,11 +19470,11 @@
         const threadEl = result.querySelector(".query-thread") || document.createElement("div");
         threadEl.className = "query-thread";
 
-        // Add this question to thread
+        // Add this question to thread (newest first)
         const turnEl = document.createElement("div");
         turnEl.className = "query-turn";
         turnEl.innerHTML = `<div class="query-turn-q">${esc(q)}</div><div class="query-turn-a" id="q-turn-current"><div class="query-phase-bar"><div class="query-phase-steps"><div class="query-phase-step active" id="qps-0"></div><div class="query-phase-step" id="qps-1"></div><div class="query-phase-step" id="qps-2"></div></div><span id="q-phase-label">Searching knowledge base...</span></div><div id="q-stream-body" class="md" style="font-size:13px;line-height:1.7;margin-top:4px"></div></div>`;
-        threadEl.appendChild(turnEl);
+        threadEl.prepend(turnEl);
 
         // Rebuild result: thread + new turn
         result.innerHTML = "";
