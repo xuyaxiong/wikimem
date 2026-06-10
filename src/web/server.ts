@@ -563,11 +563,13 @@ export function createServer(vaultRoot: string, port: number): void {
     const chunks: Buffer[] = [];
     req.on('data', (chunk: Buffer) => chunks.push(chunk));
     req.on('end', async () => {
-      const filename = req.headers['x-filename'] as string | undefined;
-      if (!filename) {
+      const filenameRaw = req.headers['x-filename'] as string | undefined;
+      if (!filenameRaw) {
         res.status(400).json({ error: 'Missing x-filename header' });
         return;
       }
+      // X-Filename is URL-encoded on the client to support non-ASCII chars
+      const filename = decodeURIComponent(filenameRaw);
       const now = new Date().toISOString().split('T')[0] ?? '';
       const dateDir = join(config.rawDir, now);
       mkdirSync(dateDir, { recursive: true });

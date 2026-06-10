@@ -77,7 +77,17 @@ export function writeWikiPage(
   if (!existsSync(dir)) {
     mkdirSync(dir, { recursive: true });
   }
-  const output = matter.stringify(content, frontmatter);
+
+  // Convert Windows backslashes to forward slashes in sources paths so
+  // js-yaml doesn't choke (C:\... unquoted breaks YAML parsing).
+  const safeFrontmatter: Record<string, unknown> = { ...frontmatter };
+  if (Array.isArray(safeFrontmatter['sources'])) {
+    safeFrontmatter['sources'] = safeFrontmatter['sources'].map((s) =>
+      typeof s === 'string' ? s.replace(/\\/g, '/') : s,
+    );
+  }
+
+  const output = matter.stringify(content, safeFrontmatter);
   writeFileSync(filePath, output, 'utf-8');
 }
 

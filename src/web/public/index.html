@@ -15820,6 +15820,7 @@
       let gitDropdownOpen = false;
       async function loadGitBadge() {
         const badge = document.getElementById("git-status-badge");
+        if (!badge) return;
         try {
           const status = await api("/api/git/status");
           if (!status.initialized) {
@@ -18724,7 +18725,7 @@
             const bytes = new Uint8Array(ab);
             const r = await fetch("/api/upload", {
               method: "POST",
-              headers: { "x-filename": file.name, "Content-Type": "application/octet-stream" },
+              headers: { "x-filename": encodeURIComponent(file.name), "Content-Type": "application/octet-stream" },
               body: bytes,
             });
             if (r.ok) imported++;
@@ -18769,7 +18770,7 @@
         const bytes = enc.encode(content);
         const r = await fetch("/api/upload", {
           method: "POST",
-          headers: { "x-filename": filename, "Content-Type": "application/octet-stream" },
+          headers: { "x-filename": encodeURIComponent(filename), "Content-Type": "application/octet-stream" },
           body: bytes,
         });
         if (r.ok) {
@@ -19362,7 +19363,7 @@
               method: "POST",
               headers: {
                 "Content-Type": "application/octet-stream",
-                "X-Filename": file.name,
+                "X-Filename": encodeURIComponent(file.name),
               },
               body: buf,
             });
@@ -19372,8 +19373,9 @@
             else if (data.ingestError)
               statusEl.textContent = `⚠ ${file.name} — ${data.ingestError}`;
             else statusEl.textContent = `✓ ${file.name} uploaded`;
-          } catch {
+          } catch (err) {
             statusEl.textContent = `✗ ${file.name} failed`;
+            console.error("Upload error:", err);
           }
         }
         loadHome();
@@ -20464,7 +20466,7 @@
         const res = await fetch("/api/upload", {
           method: "POST",
           headers: {
-            "x-filename": file.name,
+            "x-filename": encodeURIComponent(file.name),
             "Content-Type": "application/octet-stream",
           },
           body: buf,
@@ -20493,7 +20495,7 @@
           const buf = await blob.arrayBuffer();
           const res = await fetch("/api/upload", {
             method: "POST",
-            headers: { "x-filename": fakeName, "Content-Type": "application/octet-stream" },
+            headers: { "x-filename": encodeURIComponent(fakeName), "Content-Type": "application/octet-stream" },
             body: buf,
           });
           return await res.json();
@@ -20577,7 +20579,7 @@
           const res = await fetch("/api/upload", {
             method: "POST",
             headers: {
-              "x-filename": filename,
+              "x-filename": encodeURIComponent(filename),
               "Content-Type": "application/octet-stream",
             },
             body: buf,
@@ -20635,7 +20637,7 @@
               const res = await fetch("/api/upload", {
                 method: "POST",
                 headers: {
-                  "x-filename": filename,
+                  "x-filename": encodeURIComponent(filename),
                   "Content-Type": "application/octet-stream",
                 },
                 body: buf,
@@ -20710,7 +20712,7 @@
             await fetch("/api/upload", {
               method: "POST",
               headers: {
-                "x-filename": file.webkitRelativePath || file.name,
+                "x-filename": encodeURIComponent(file.webkitRelativePath || file.name),
                 "Content-Type": "application/octet-stream",
               },
               body: buf,
