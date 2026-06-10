@@ -635,7 +635,7 @@ export function createServer(vaultRoot: string, port: number): void {
       const filename = req.params['filename'];
       if (!filename) { res.status(400).json({ error: 'Missing filename' }); return; }
       const decoded = decodeURIComponent(filename);
-      const fullPath = join(config.rawDir, decoded);
+      const fullPath = resolve(config.rawDir, decoded);
       const resolved = resolve(fullPath);
       if (!resolved.startsWith(resolve(config.rawDir))) {
         res.status(403).json({ error: 'Access denied' });
@@ -1948,7 +1948,9 @@ export function createServer(vaultRoot: string, port: number): void {
       if (filePath.startsWith('/')) filePath = filePath.slice(1);
       if (!filePath) { res.status(400).json({ error: 'Missing path query param' }); return; }
       const decoded = decodeURIComponent(filePath);
-      const fullPath = join(config.rawDir, decoded);
+      // decoded may already be absolute (C:/...) — resolve handles this
+      // correctly, join would double the path on Windows.
+      const fullPath = resolve(config.rawDir, decoded);
       const resolved = resolve(fullPath);
       if (!resolved.startsWith(resolve(config.rawDir))) {
         res.status(403).json({ error: 'Access denied' });

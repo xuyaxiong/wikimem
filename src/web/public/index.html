@@ -19368,14 +19368,18 @@
               body: buf,
             });
             const data = await res.json();
-            if (data.status === "ingested")
+            if (data.rejected) {
+              statusEl.textContent = `⛔ ${file.name} — ${data.rejectionReason || 'Rejected'}`;
+            console.warn('[ingest] rejected:', data.rejectionReason);
+            } else if (data.status === "ingested")
               statusEl.textContent = `✓ ${file.name} — ${data.pagesUpdated || 0} pages`;
-            else if (data.ingestError)
+            else if (data.ingestError) {
               statusEl.textContent = `⚠ ${file.name} — ${data.ingestError}`;
-            else statusEl.textContent = `✓ ${file.name} uploaded`;
+            console.error('[ingest] error:', data.ingestError);
+            } else statusEl.textContent = `✓ ${file.name} uploaded`;
           } catch (err) {
             statusEl.textContent = `✗ ${file.name} failed`;
-            console.error("Upload error:", err);
+            console.error('[upload] exception:', err);
           }
         }
         loadHome();
@@ -20585,10 +20589,10 @@
             body: buf,
           });
           const data = await res.json();
-          if (data.status === "ingested") {
-            showToast(
-              `✓ ${data.pagesUpdated || 0} pages created from "${title}"`,
-            );
+          if (data.rejected) {
+            console.warn('[ingest] rejected:', data.rejectionReason);
+          } else if (data.status === "ingested") {
+            showToast(`✓ ${data.pagesUpdated || 0} pages created from "${title}"`);
             textarea.value = "";
             loadTree();
             loadHome();
@@ -20643,10 +20647,10 @@
                 body: buf,
               });
               const data = await res.json();
-              if (data.status === "ingested") {
-                showToast(
-                  `✓ Voice note: ${data.pagesUpdated || 0} pages created`,
-                );
+              if (data.rejected) {
+                console.warn('[voice] rejected:', data.rejectionReason);
+              } else if (data.status === "ingested") {
+                showToast(`✓ Voice note: ${data.pagesUpdated || 0} pages created`);
                 loadTree();
                 loadHome();
               } else {
