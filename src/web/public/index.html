@@ -19341,6 +19341,7 @@
       );
       dropZone.addEventListener("drop", (e) => {
         e.preventDefault();
+        e.stopPropagation();
         dropZone.classList.remove("dragover");
         if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files);
       });
