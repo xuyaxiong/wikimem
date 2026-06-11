@@ -1,5 +1,5 @@
 import express from 'express';
-import { readFileSync, existsSync, writeFileSync, mkdirSync, readdirSync, statSync, renameSync, unlinkSync as fsUnlinkSync, chmodSync } from 'node:fs';
+import { readFileSync, existsSync, writeFileSync, mkdirSync, readdirSync, statSync, renameSync, unlinkSync as fsUnlinkSync, chmodSync, rmSync, copyFileSync } from 'node:fs';
 import { join, resolve, extname, basename, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { randomBytes } from 'node:crypto';
@@ -4193,6 +4193,60 @@ export function createServer(vaultRoot: string, port: number): void {
     try {
       markPrivacyAccepted(vaultRoot);
       res.json({ accepted: true });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      res.status(500).json({ error: msg });
+    }
+  });
+
+  // POST /api/wiki/reset — wipe wiki-derived data, restore to fresh-init state
+  app.post('/api/wiki/reset', (_req, res) => {
+    try {
+      const deleted: string[] = [];
+
+      for (const dir of ['wiki', 'raw', '.wikimem', '.wikimem-cache']) {
+        const p = join(vaultRoot, dir);
+        if (existsSync(p)) {
+          rmSync(p, { recursive: true, force: true });
+          deleted.push(p);
+        }
+      }
+
+      // Recreate wiki/ scaffold (same as init scaffoldVault)
+      const wikiDirs = [
+        'wiki', 'wiki/sources', 'wiki/entities', 'wiki/concepts', 'wiki/syntheses',
+      ];
+      for (const d of wikiDirs) {
+        mkdirSync(join(vaultRoot, d), { recursive: true });
+      }
+      mkdirSync(join(vaultRoot, 'raw'), { recursive: true });
+
+      // Recreate index.md and log.md
+      const now = new Date().toISOString().split('T')[0];
+      writeFileSync(
+        join(vaultRoot, 'wiki', 'index.md'),
+        `---\ntitle: Wiki Index\ntype: index\ncreated: "${now}"\n---\n\n# Wiki Index\n\n_This index is auto-maintained by wikimem._\n\n## Sources\n\n## Entities\n\n## Concepts\n\n## Syntheses\n`,
+        'utf-8',
+      );
+      writeFileSync(
+        join(vaultRoot, 'wiki', 'log.md'),
+        `---\ntitle: Wiki Log\ntype: log\ncreated: "${now}"\n---\n\n# Wiki Log\n\n_Chronological record of wiki operations._\n\n## [${now}] reset | Vault reset\n\n`,
+        'utf-8',
+      );
+
+      // Copy source-type templates if available
+      const templateDir = join(__dirname, '../../templates/source-types');
+      const srcTemplateDir = join(vaultRoot, 'wiki', '_templates', 'sources');
+      if (existsSync(templateDir)) {
+        mkdirSync(srcTemplateDir, { recursive: true });
+        for (const f of readdirSync(templateDir)) {
+          if (f.endsWith('.md')) {
+            copyFileSync(join(templateDir, f), join(srcTemplateDir, f));
+          }
+        }
+      }
+
+      res.json({ status: 'ok', deleted, count: deleted.length });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       res.status(500).json({ error: msg });

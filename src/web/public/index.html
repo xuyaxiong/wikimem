@@ -5830,6 +5830,11 @@
         justify-content: space-between;
         margin-bottom: 20px;
       }
+      .btn-danger {
+        background: transparent !important;
+        color: var(--red) !important;
+        border-color: var(--red-dim) !important;
+      }
       .btn-danger:hover {
         background: var(--red-dim) !important;
         color: var(--red) !important;
@@ -17151,6 +17156,12 @@
             <p><strong style="color:var(--text)">GitHub:</strong> <a href="https://github.com/naman10parikh/wikimem" style="color:var(--accent)" target="_blank">naman10parikh/wikimem</a></p>
             <p><strong style="color:var(--text)">npm:</strong> <a href="https://www.npmjs.com/package/wikimem" style="color:var(--accent)" target="_blank">wikimem</a></p>
             <p><strong style="color:var(--text)">License:</strong> MIT</p>
+          </div>
+          <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border-subtle)">
+            <div style="font-size:12px;font-weight:600;color:var(--red);margin-bottom:6px">Danger Zone</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">Reset wiki to fresh-init state — deletes all pages, raw files, caches, and credentials. Only config.yaml is preserved.</div>
+            <button class="settings-btn btn-danger" onclick="resetWiki()" style="color:var(--red);border-color:var(--red-dim)">清空 Wiki</button>
+            <span id="reset-status" class="settings-status" style="margin-left:8px"></span>
           </div>`;
         }
       }
@@ -17435,6 +17446,22 @@
         applyAppearance(APPEARANCE_DEFAULTS);
         renderSettingsSection("appearance");
         showToast("✓ Appearance reset");
+      }
+      async function resetWiki() {
+        if (!confirm('确定要清空 Wiki 吗？这将删除所有页面和源文件，但保留配置。不可恢复。')) return;
+        if (!confirm('再次确认：清空后所有知识库数据将永久丢失，配置不受影响。确定继续？')) return;
+        const s = document.getElementById("reset-status");
+        if (s) { s.className = "settings-status"; s.innerHTML = '<span class="spinner"></span> 清空中...'; }
+        try {
+          const res = await fetch('/api/wiki/reset', { method: 'POST' });
+          const data = await res.json();
+          if (data.error) throw new Error(data.error);
+          if (s) { s.className = "settings-status ok"; s.textContent = '✓ 已清空'; }
+          showToast('Wiki 已清空，刷新页面以重新开始');
+          setTimeout(() => location.reload(), 1500);
+        } catch (err) {
+          if (s) { s.className = "settings-status err"; s.textContent = '✗ ' + (err.message || '清空失败'); }
+        }
       }
       function applyAppearance(prefs) {
         const r = document.documentElement;
