@@ -4564,6 +4564,25 @@
       .query-empty-hint { padding: 10px 0 4px; font-size: 12px; color: var(--text-muted); text-align: center; }
       .query-empty-hint a { color: var(--accent); cursor: pointer; text-decoration: none; }
       .query-empty-hint a:hover { text-decoration: underline; }
+      .think-block {
+        background: var(--bg-tertiary);
+        border-left: 3px solid var(--border);
+        padding: 12px 16px;
+        margin: 8px 0;
+        border-radius: var(--r-md);
+        font-size: var(--font-sm);
+        color: var(--text-secondary);
+      }
+      .think-block .think-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+      }
+      .think-block p { margin: 0 0 6px; }
+      .think-block p:last-child { margin-bottom: 0; }
 
       .spinner {
         display: inline-block;
@@ -12212,6 +12231,13 @@
       }
 
       function renderMarkdown(md) {
+        // Render <think> blocks with gray background before markdown processing
+        if (/<think/i.test(md)) {
+          md = md.replace(/<think>([\s\S]*?)<\/think>/gi, (_, content) => {
+            const inner = renderMarkdown(content);
+            return `<div class="think-block"><div class="think-label">💭 Thinking</div>${inner}</div>`;
+          });
+        }
         if (typeof marked !== "undefined") {
           try {
             return marked.parse(md);
@@ -18566,14 +18592,14 @@
         if (!isGenericName) {
           // Use configured name directly. If it already says "… Wiki" use as-is, else append.
           if (/\bwiki\b/i.test(rawConfigName)) {
-            heroTitle = `Welcome to ${rawConfigName}`;
+            heroTitle = `欢迎来到 ${rawConfigName}`;
           } else {
-            heroTitle = `Welcome to ${rawConfigName}'s Wiki`;
+            heroTitle = `欢迎来到 ${rawConfigName} 的 Wiki`;
           }
         } else if (ownerName) {
-          heroTitle = `Welcome to ${ownerName}'s Wiki`;
+          heroTitle = `欢迎来到 ${ownerName} 的 Wiki`;
         } else {
-          heroTitle = "Welcome to your Wiki";
+          heroTitle = "欢迎来到你的 Wiki";
         }
         const wikiDesc = (wikiConfig && wikiConfig.description) ? wikiConfig.description : "";
         const heroH1 = document.getElementById("home-hero-title") || document.querySelector("#home-dashboard .home-hero h1");
@@ -19639,7 +19665,7 @@
           if (followups.length) {
             const fuEl = document.createElement("div");
             fuEl.className = "query-followups";
-            fuEl.innerHTML = `<div class="query-followup-label">Ask a follow-up</div>` +
+            fuEl.innerHTML = `<div class="query-followup-label">追问</div>` +
               followups.map(f =>
                 `<button class="query-followup-btn" onclick="submitQuery('${esc(f)}')">${esc(f)}</button>`
               ).join("");
