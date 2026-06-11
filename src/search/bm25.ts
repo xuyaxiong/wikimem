@@ -90,9 +90,30 @@ export function bm25Search(query: string, documents: Document[]): SearchResult[]
 }
 
 export function tokenize(text: string): string[] {
-  return text
-    .toLowerCase()
+  const tokens: string[] = [];
+  const lower = text.toLowerCase();
+
+  // CJK character 2-grams — works without a word segmentation library
+  const cjkRuns = lower.match(/[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff]+/g);
+  if (cjkRuns) {
+    for (const run of cjkRuns) {
+      if (run.length === 1) {
+        tokens.push(run);
+      } else {
+        for (let i = 0; i < run.length - 1; i++) {
+          tokens.push(run.substring(i, i + 2));
+        }
+      }
+    }
+  }
+
+  // Latin / alphanumeric tokens (existing logic, keep > 2 char filter)
+  const latin = lower
+    .replace(/[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff]+/g, ' ')
     .replace(/[^a-z0-9\s]/g, ' ')
     .split(/\s+/)
     .filter((t) => t.length > 2);
+
+  tokens.push(...latin);
+  return tokens;
 }

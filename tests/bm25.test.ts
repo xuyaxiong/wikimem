@@ -26,6 +26,19 @@ describe('bm25', () => {
     it('collapses multiple spaces', () => {
       expect(tokenize('hello    world')).toEqual(['hello', 'world']);
     });
+
+    it('generates 2-grams for CJK text', () => {
+      expect(tokenize('员工工作时间')).toEqual(['员工', '工工', '工作', '作时', '时间']);
+    });
+
+    it('mixes CJK and latin tokens', () => {
+      expect(tokenize('vLLM 模型 qwen3')).toContain('vllm');
+      expect(tokenize('vLLM 模型 qwen3')).toContain('模型');
+    });
+
+    it('handles short CJK strings', () => {
+      expect(tokenize('你好')).toEqual(['你好']);
+    });
   });
 
   describe('bm25Search', () => {
