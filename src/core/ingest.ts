@@ -299,7 +299,11 @@ async function _ingestSourceInner(
 
   for (const page of pages) {
     // User-supplied category overrides LLM-detected category
-    const pageCategory = options.category ?? page.category;
+    // Normalize singular → plural (LLM sometimes outputs 'concept' instead of 'concepts')
+    const CATEGORY_PLURAL: Record<string, string> = {
+      source: 'sources', entity: 'entities', concept: 'concepts', synthesis: 'syntheses',
+    };
+    const pageCategory = CATEGORY_PLURAL[options.category ?? page.category] ?? (options.category ?? page.category);
     const pagePath = join(config.wikiDir, pageCategory, `${slugify(page.title)}.md`);
     const dir = join(pagePath, '..');
     if (!existsSync(dir)) {
@@ -351,7 +355,7 @@ async function _ingestSourceInner(
   // Step 5: Generate embeddings for new pages (if provider configured)
   if (options.embeddingProvider) {
     for (const page of pages) {
-      const pageCategory = options.category ?? page.category;
+      const pageCategory = CATEGORY_PLURAL[options.category ?? page.category] ?? (options.category ?? page.category);
       const pagePath = join(config.wikiDir, pageCategory, `${slugify(page.title)}.md`);
       try {
         await embedPage(pagePath, page.content, options.embeddingProvider);
