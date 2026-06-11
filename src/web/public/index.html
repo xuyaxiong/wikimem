@@ -10167,9 +10167,9 @@
 
         <!-- Pipeline context panel -->
         <div id="sidebar-panel-pipeline" class="sidebar-ctx-panel">
-          <div class="sidebar-ctx-title">Pipeline</div>
+          <div class="sidebar-ctx-title">流水线</div>
           <div class="sidebar-ctx-content">
-            <div class="sidebar-ctx-hint">Pipeline view is open in the main area. Configure ingestion pipelines there.</div>
+            <div class="sidebar-ctx-hint">流水线视图已在主区域打开，可在此配置导入流程。</div>
           </div>
         </div>
 
@@ -10921,7 +10921,7 @@
               <!-- Header -->
               <div style="margin-bottom: 16px">
                 <h2 style="margin: 0; font-size: 18px; font-weight: 600">
-                  Add to Your Wiki
+                  添加到知识库
                 </h2>
                 <p
                   style="
@@ -10930,8 +10930,7 @@
                     font-size: 12px;
                   "
                 >
-                  Drop files, paste text, or enter a URL to grow your knowledge
-                  base
+                  拖拽文件、粘贴文本或输入 URL，扩充你的知识库
                 </p>
               </div>
 
@@ -10979,7 +10978,7 @@
                     <line x1="12" y1="3" x2="12" y2="15" />
                   </svg>
                   <div style="font-size: 14px; color: var(--text-secondary); font-weight: 500;">
-                    Drop files, paste text, or type anything here...
+                    拖拽文件到此处，或粘贴文本...
                   </div>
                   <div style="display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; justify-content: center;">
                     <span style="font-size: 10px; color: var(--text-muted); background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; padding: 2px 7px;">PDF</span>
@@ -11000,7 +10999,7 @@
                 <div style="display: flex; gap: 8px; align-items: flex-start">
                   <textarea
                     id="pipe-text-input"
-                    placeholder="Or paste raw text here to add to your wiki..."
+                    placeholder="或在此粘贴文本内容添加到知识库..."
                     style="
                       flex: 1;
                       min-height: 60px;
@@ -11065,7 +11064,7 @@
                       animation: voicePulse 1.2s infinite;
                     "
                   ></span>
-                  Recording… <span id="voice-timer">0:00</span>
+                  录音中… <span id="voice-timer">0:00</span>
                 </div>
                 <div
                   style="
@@ -11080,7 +11079,7 @@
                     onclick="ingestRawText()"
                     style="font-size: 12px; padding: 5px 14px"
                   >
-                    Add Notes
+                    添加笔记
                   </button>
                   <input
                     type="file"
@@ -11097,10 +11096,10 @@
                       document.getElementById('pipe-folder-input').click()
                     "
                   >
-                    Upload Files
+                    上传文件
                   </button>
                   <span style="font-size: 11px; color: var(--text-muted)"
-                    >Paste notes, transcripts, or any text content</span
+                    >粘贴笔记、文本或任意文字内容</span
                   >
                 </div>
               </div>
@@ -11144,7 +11143,7 @@
                       font-weight: 600;
                       color: var(--text-bright);
                     "
-                    >Connect Your Data</span
+                    >连接数据源</span
                   >
                 </div>
                 <div class="connect-cards" id="oauth-connect-cards">
@@ -11327,7 +11326,7 @@
                       letter-spacing: 0.5px;
                     "
                   >
-                    Recent Runs
+                    最近运行
                   </h3>
                   <span
                     id="pipe-runs-count"
@@ -11357,10 +11356,10 @@
                       d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
                     />
                   </svg>
-                  Connect from anywhere
+                  随处接入
                 </div>
                 <div class="gw-section-sub">
-                  Send content to WikiMem from any tool, script, or automation
+                  从任意工具、脚本或自动化流程向 WikiMem 发送内容
                 </div>
 
                 <div class="gw-endpoint">
@@ -11379,7 +11378,7 @@
                   onclick="(function(btn){var block=document.getElementById('gw-curl-collapse');var shown=block.style.display!=='none';block.style.display=shown?'none':'block';btn.textContent=shown?'Show example':'Hide example';})(this)"
                   style="background:none;border:none;padding:0;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);cursor:pointer;margin-bottom:8px;display:block"
                 >
-                  Show example
+                  查看示例
                 </button>
                 <div id="gw-curl-collapse" style="display:none">
                   <div class="gw-curl" id="gw-curl-block">
@@ -11396,8 +11395,8 @@
                 </div>
 
                 <div class="gw-integrations">
-                  <strong>Works with:</strong> Email forwarding, Slack bots,
-                  Zapier, n8n, custom scripts
+                  <strong>适用场景：</strong> Email 转发、Slack 机器人、
+                  Zapier、n8n、自定义脚本
                 </div>
               </div>
             </div>
@@ -20093,47 +20092,47 @@
         {
           id: "detect",
           icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
-          label: "Detect",
+          label: "检测",
         },
         {
           id: "extract",
           icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
-          label: "Extract",
+          label: "提取",
         },
         {
           id: "dedup",
           icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>',
-          label: "Dedup",
+          label: "去重",
         },
         {
           id: "copy-raw",
           icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>',
-          label: "Save",
+          label: "保存",
         },
         {
           id: "llm-compile",
           icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a4 4 0 014 4c0 1.95-1.4 3.58-3.25 3.93L12 22"/><path d="M12 2a4 4 0 00-4 4c0 1.95 1.4 3.58 3.25 3.93"/><line x1="4.5" y1="9" x2="19.5" y2="9"/></svg>',
-          label: "Compile",
+          label: "编译",
         },
         {
           id: "write-pages",
           icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
-          label: "Write",
+          label: "写入",
         },
         {
           id: "embed",
           icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>',
-          label: "Embed",
+          label: "嵌入",
         },
         {
           id: "update-index",
           icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
-          label: "Index",
+          label: "索引",
         },
         {
           id: "git-commit",
           icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><line x1="1.05" y1="12" x2="7" y2="12"/><line x1="17.01" y1="12" x2="22.96" y2="12"/></svg>',
-          label: "Commit",
+          label: "提交",
         },
       ];
 
@@ -20281,7 +20280,7 @@
 
         const progErr = hasStepError ? " factory-progress--error" : "";
         html += `<div class="factory-progress${progErr}" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(progressPct)}" aria-label="Pipeline progress"><div class="factory-progress-fill" style="transform:scaleX(${Math.min(1, progressPct / 100)})"></div></div>`;
-        html += `<div class="factory-progress-label"><span>Processing</span><span>${Math.round(progressPct)}%</span></div></div>`;
+        html += `<div class="factory-progress-label"><span>处理中</span><span>${Math.round(progressPct)}%</span></div></div>`;
 
         container.innerHTML = html;
 
@@ -20306,7 +20305,7 @@
             <div class="celeb-confetti" aria-hidden="true">
               <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
             </div>
-            <h3>🎉 Pipeline complete</h3>
+            <h3>🎉 处理完成</h3>
             <p class="celeb-summary">${summaryHtml}</p>
             ${pageLinksHtml}
           </div>`;
@@ -20346,8 +20345,8 @@
           if (!data.runs || data.runs.length === 0) {
             list.innerHTML = `<div style="text-align:center;padding:32px 20px;color:var(--text-muted)">
             <div style="font-size:32px;margin-bottom:10px;opacity:0.5">📭</div>
-            <div style="font-size:13px">No pipeline runs yet</div>
-            <div style="font-size:11px;margin-top:4px;color:var(--text-dim)">Upload a file or ingest a URL to get started</div>
+            <div style="font-size:13px">暂无运行记录</div>
+            <div style="font-size:11px;margin-top:4px;color:var(--text-dim)">上传文件或输入网址，开始构建你的知识库</div>
           </div>`;
             return;
           }
@@ -20374,7 +20373,7 @@
 
               let statusHtml = "";
               if (inProgress) {
-                statusHtml = `<span class="pipe-status-badge running">⟳ Processing</span>`;
+                statusHtml = `<span class="pipe-status-badge running">⟳ 处理中</span>`;
               } else if (run.result) {
                 statusHtml = `<span class="pipe-status-badge success">✓ Complete</span>`;
               }
@@ -20500,7 +20499,7 @@
               <div class="upload-queue-row">
                 <span class="upload-queue-icon">${getIcon(f)}</span>
                 <span class="upload-queue-name" title="${esc(f.name)}">${esc(f.name)}</span>
-                <span class="upload-queue-status pending" id="uq-status-${i}">Pending</span>
+                <span class="upload-queue-status pending" id="uq-status-${i}">等待中</span>
               </div>
               <div class="upload-queue-bar"><div class="upload-queue-bar-fill" id="uq-bar-${i}" style="width:0%"></div></div>
             </div>`
@@ -20511,7 +20510,7 @@
           const file = files[i];
           const statusEl = document.getElementById(`uq-status-${i}`);
           const barEl = document.getElementById(`uq-bar-${i}`);
-          if (statusEl) { statusEl.className = "upload-queue-status processing"; statusEl.textContent = "Processing"; }
+          if (statusEl) { statusEl.className = "upload-queue-status processing"; statusEl.textContent = "处理中"; }
           if (barEl) barEl.style.width = "30%";
           try {
             const data = await uploadFileWithFallback(file);
