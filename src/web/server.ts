@@ -571,11 +571,17 @@ export function createServer(vaultRoot: string, port: number): void {
       }
       // X-Filename is URL-encoded on the client to support non-ASCII chars
       const filename = decodeURIComponent(filenameRaw);
+      const buf = Buffer.concat(chunks);
+      // Reject empty files before writing or ingesting
+      if (buf.length === 0) {
+        res.json({ status: 'rejected', title: filename, rejectionReason: 'Empty file' });
+        return;
+      }
       const now = new Date().toISOString().split('T')[0] ?? '';
       const dateDir = join(config.rawDir, now);
       mkdirSync(dateDir, { recursive: true });
       const dest = join(dateDir, basename(filename));
-      writeFileSync(dest, Buffer.concat(chunks));
+      writeFileSync(dest, buf);
 
       const autoIngest = req.headers['x-auto-ingest'] !== 'false';
       if (autoIngest) {

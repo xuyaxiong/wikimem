@@ -297,12 +297,13 @@ async function _ingestSourceInner(
   // Generate a session ID for multi-session reasoning (COMP-MP-005)
   const sessionId = `ingest-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
 
+  // Normalize singular → plural (LLM sometimes outputs 'concept' instead of 'concepts')
+  const CATEGORY_PLURAL: Record<string, string> = {
+    source: 'sources', entity: 'entities', concept: 'concepts', synthesis: 'syntheses',
+  };
+
   for (const page of pages) {
     // User-supplied category overrides LLM-detected category
-    // Normalize singular → plural (LLM sometimes outputs 'concept' instead of 'concepts')
-    const CATEGORY_PLURAL: Record<string, string> = {
-      source: 'sources', entity: 'entities', concept: 'concepts', synthesis: 'syntheses',
-    };
     const pageCategory = CATEGORY_PLURAL[options.category ?? page.category] ?? (options.category ?? page.category);
     const pagePath = join(config.wikiDir, pageCategory, `${slugify(page.title)}.md`);
     const dir = join(pagePath, '..');
