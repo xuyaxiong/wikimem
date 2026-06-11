@@ -2687,6 +2687,7 @@ export function createServer(vaultRoot: string, port: number): void {
         eventCount: r.events.length,
         hasSummary: !!r.summary,
         hasLLMTrace: !!r.llmTrace,
+        hasError: r.events.some(e => e.step === 'error' || e.status === 'error'),
         result: r.result,
       }));
       res.json({ runs: summaries });
@@ -2705,6 +2706,27 @@ export function createServer(vaultRoot: string, port: number): void {
       res.json(run);
     } catch {
       res.status(500).json({ error: 'Failed to get run' });
+    }
+  });
+
+  // Retry a failed pipeline run
+  app.post('/api/pipeline/retry', async (req, res) => {
+    try {
+      const { source } = req.body as { source?: string };
+      if (!source || !existsSync(source)) {
+        res.status(400).json({ error: 'Source file not found' });
+        return;
+      }
+      const { ingestSource } = await import('../core/ingest.js');
+      const { createProviderFromUserConfig } = await import('../providers/index.js');
+      const { loadConfig } = await import('../core/config.js');
+      const userConfig = loadConfig(config.configPath);
+      const provider = createProviderFromUserConfig(userConfig);
+      const result = await ingestSource(source, config, provider, { verbose: false });
+      res.json({ status: 'retried', path: source, ...result });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      res.json({ status: 'retry_failed', path: req.body?.source, ingestError: msg });
     }
   });
 

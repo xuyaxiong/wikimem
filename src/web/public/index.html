@@ -20171,6 +20171,16 @@
 
             if (data.step === "complete" || data.step === "error") {
               currentPipelineSteps[data.step] = data;
+              // Mark the currently running step as error so it stops spinning
+              if (data.step === "error") {
+                for (const s of PIPELINE_STEPS) {
+                  const ev = currentPipelineSteps[s.id];
+                  if (ev && ev.status === "running") {
+                    currentPipelineSteps[s.id] = { ...ev, status: "error", detail: data.detail };
+                    break;
+                  }
+                }
+              }
               renderPipelineSteps();
               setTimeout(() => {
                 currentPipelineSteps = {};
@@ -20280,7 +20290,7 @@
 
         const progErr = hasStepError ? " factory-progress--error" : "";
         html += `<div class="factory-progress${progErr}" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(progressPct)}" aria-label="Pipeline progress"><div class="factory-progress-fill" style="transform:scaleX(${Math.min(1, progressPct / 100)})"></div></div>`;
-        html += `<div class="factory-progress-label"><span>处理中</span><span>${Math.round(progressPct)}%</span></div></div>`;
+        html += `<div class="factory-progress-label"><span>${hasStepError ? '处理失败' : '处理中'}</span><span>${Math.round(progressPct)}%</span></div></div>`;
 
         container.innerHTML = html;
 
@@ -20354,7 +20364,7 @@
             .map((run, idx) => {
               const srcName = String(run.source).split("/").pop() || run.source;
               const icon = srcIcon(srcName);
-              const inProgress = !run.result;
+              const inProgress = !run.result && !run.hasError;
               const timeAgo = formatTimeAgo(run.startedAt);
 
               const triggerType = run.triggeredBy || "human";
@@ -20372,8 +20382,10 @@
               };
 
               let statusHtml = "";
-              if (inProgress) {
+              if (inProgress && !run.hasError) {
                 statusHtml = `<span class="pipe-status-badge running">⟳ 处理中</span>`;
+              } else if (run.hasError) {
+                statusHtml = `<span class="pipe-status-badge error">✗ 失败</span>`;
               } else if (run.result) {
                 statusHtml = `<span class="pipe-status-badge success">✓ 完成</span>`;
               }
@@ -20393,6 +20405,10 @@
               ${run.hasSummary || run.hasLLMTrace ? `<button class="btn-sm" onclick="event.stopPropagation();showRunDetail('${run.id}')" style="align-self:center">查看 AI 操作</button>` : ""}
             </div>`;
               }
+              // Retry button always visible for failed runs
+              const retryBtn = run.hasError
+                ? `<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border-subtle)"><button class="btn-sm" onclick="event.stopPropagation();retryRun('${esc(run.source).replace(/\\/g,'/')}',${idx})" style="color:var(--accent)">↻ 重试</button></div>`
+                : "";
 
               const pagesN = run.result?.pagesCreated || 0;
               const durationMs = run.result && run.startedAt && run.endedAt
@@ -20424,6 +20440,7 @@
             </div>
             ${pageLinksHtml}
             ${metricsHtml}
+            ${retryBtn}
             <div id="run-detail-${run.id}" class="run-detail" style="display:none"></div>
           </div>`;
             })
@@ -21684,6 +21701,30 @@
         </div>
         ${event?.detail ? `<div class="sd-desc">${esc(event.detail)}</div>` : ""}
       </div>`;
+      }
+
+      async function retryRun(source, idx) {
+        // Switch to pipeline view so user sees progress
+        if (state.viewMode !== "pipeline") openViewTab("pipeline");
+        const statusEl = document.querySelectorAll('.pipe-run-item')[idx]?.querySelector('.pipe-status-badge');
+        if (statusEl) { statusEl.className = 'pipe-status-badge running'; statusEl.textContent = '⟳ 重试中...'; }
+        try {
+          const res = await fetch('/api/pipeline/retry', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ source }),
+          });
+          const data = await res.json();
+          if (data.ingestError) {
+            showToast('⛔ 重试失败: ' + data.ingestError, 4000);
+          } else {
+            showToast('✓ 重试成功');
+          }
+          // Refresh after SSE has had time to update UI
+          setTimeout(() => { loadPipelineView(); loadTree(); loadHome(); }, 1500);
+        } catch {
+          showToast('⛔ 重试请求失败', 4000);
+        }
       }
 
       async function showRunDetail(runId) {

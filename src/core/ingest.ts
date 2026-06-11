@@ -240,7 +240,7 @@ async function _ingestSourceInner(
     }
   }
 
-  pipelineEvents.emitStep('copy-raw', needsCopyToRaw ? 'done' : 'skipped', needsCopyToRaw ? `Saved to raw/${now}/` : 'Already in raw/');
+  pipelineEvents.emitStep('copy-raw', needsCopyToRaw ? 'done' : 'done', needsCopyToRaw ? `Saved to raw/${now}/` : '已保存到 raw/');
   pipelineEvents.emitStep('llm-compile', 'running', 'Asking LLM to analyze and generate wiki pages...');
 
   // Step 3: Ask LLM to process and integrate into wiki
