@@ -20390,7 +20390,7 @@
                 <div style="font-size:10px;color:var(--text-muted)">链接</div>
               </div>
               <div style="flex:1"></div>
-              ${run.hasSummary || run.hasLLMTrace ? `<button class="btn-sm" onclick="showRunDetail('${run.id}')" style="align-self:center">查看 AI 操作</button>` : ""}
+              ${run.hasSummary || run.hasLLMTrace ? `<button class="btn-sm" onclick="event.stopPropagation();showRunDetail('${run.id}')" style="align-self:center">查看 AI 操作</button>` : ""}
             </div>`;
               }
 
@@ -21695,7 +21695,7 @@
         }
         container.style.display = "block";
         container.innerHTML =
-          '<div style="padding:12px;text-align:center;color:var(--text-muted);font-size:12px"><div class="spinner" style="margin:0 auto 8px"></div>Loading AI analysis...</div>';
+          '<div style="padding:12px;text-align:center;color:var(--text-muted);font-size:12px"><div class="spinner" style="margin:0 auto 8px"></div>正在加载 AI 分析...</div>';
         try {
           const run = await api(`/api/pipeline/runs/${runId}`);
           let html =
@@ -21706,13 +21706,13 @@
             html += `<div style="background:rgba(79,158,255,0.04);border:1px solid rgba(79,158,255,0.12);border-radius:8px;padding:14px 16px;margin-bottom:12px">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
               <span style="font-size:16px">🤖</span>
-              <span style="font-size:13px;font-weight:600;color:var(--text-bright)">AI Analysis</span>
+              <span style="font-size:13px;font-weight:600;color:var(--text-bright)">AI 分析</span>
             </div>
             <p style="margin:0 0 12px;font-size:13px;color:var(--text-secondary);line-height:1.6">${esc(s.whatHappened)}</p>`;
 
             if (s.entitiesFound?.length) {
               html += `<div style="margin-bottom:8px">
-              <span style="font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.3px">Entities Found</span>
+              <span style="font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.3px">发现的实体</span>
               <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px">${s.entitiesFound
                 .map(
                   (e) =>
@@ -21724,7 +21724,7 @@
 
             if (s.conceptsFound?.length) {
               html += `<div style="margin-bottom:8px">
-              <span style="font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.3px">Concepts</span>
+              <span style="font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.3px">概念</span>
               <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px">${s.conceptsFound
                 .map(
                   (c) =>
@@ -21736,7 +21736,7 @@
 
             if (s.pagesCreated?.length) {
               html += `<div style="margin-bottom:8px">
-              <span style="font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.3px">Pages Created</span>
+              <span style="font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.3px">创建的页面</span>
               <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px">${s.pagesCreated
                 .map(
                   (p) =>
@@ -21748,7 +21748,7 @@
 
             if (s.decisionsExplained) {
               html += `<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(79,158,255,0.1)">
-              <span style="font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.3px">Reasoning</span>
+              <span style="font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.3px">推理过程</span>
               <p style="margin:4px 0 0;font-size:12px;color:var(--text-secondary);line-height:1.6">${esc(s.decisionsExplained)}</p>
             </div>`;
             }
@@ -21781,12 +21781,12 @@
             const t = run.llmTrace;
             html += `<details style="margin-top:8px">
             <summary style="cursor:pointer;font-size:11px;color:var(--text-muted);padding:4px 0;user-select:none">
-              🔬 LLM Trace ${t.durationMs ? `· ${(t.durationMs / 1000).toFixed(1)}s` : ""} ${t.model ? `· ${t.model}` : ""}
+              🔬 LLM 追踪 ${t.durationMs ? `· ${(t.durationMs / 1000).toFixed(1)}s` : ""} ${t.model ? `· ${t.model}` : ""}
             </summary>
             <div style="background:var(--bg-surface);border-radius:6px;padding:10px;margin-top:6px">
-              ${t.systemPrompt ? `<div style="margin-bottom:8px"><div style="font-size:10px;color:var(--text-muted);font-weight:600;margin-bottom:3px">System Prompt</div><pre style="font-size:11px;font-family:var(--font-mono);background:var(--bg);padding:8px;border-radius:4px;overflow-x:auto;white-space:pre-wrap;max-height:120px;overflow-y:auto;margin:0;color:var(--text-secondary)">${esc(t.systemPrompt)}</pre></div>` : ""}
-              ${t.userPrompt ? `<div style="margin-bottom:8px"><div style="font-size:10px;color:var(--text-muted);font-weight:600;margin-bottom:3px">User Prompt</div><pre style="font-size:11px;font-family:var(--font-mono);background:var(--bg);padding:8px;border-radius:4px;overflow-x:auto;white-space:pre-wrap;max-height:120px;overflow-y:auto;margin:0;color:var(--text-secondary)">${esc((t.userPrompt || "").substring(0, 800))}${(t.userPrompt || "").length > 800 ? "…" : ""}</pre></div>` : ""}
-              ${t.response ? `<div><div style="font-size:10px;color:var(--text-muted);font-weight:600;margin-bottom:3px">Response</div><pre style="font-size:11px;font-family:var(--font-mono);background:var(--bg);padding:8px;border-radius:4px;overflow-x:auto;white-space:pre-wrap;max-height:160px;overflow-y:auto;margin:0;color:var(--text-secondary)">${esc((t.response || "").substring(0, 1200))}${(t.response || "").length > 1200 ? "…" : ""}</pre></div>` : ""}
+              ${t.systemPrompt ? `<div style="margin-bottom:8px"><div style="font-size:10px;color:var(--text-muted);font-weight:600;margin-bottom:3px">系统提示</div><pre style="font-size:11px;font-family:var(--font-mono);background:var(--bg);padding:8px;border-radius:4px;overflow-x:auto;white-space:pre-wrap;max-height:120px;overflow-y:auto;margin:0;color:var(--text-secondary)">${esc(t.systemPrompt)}</pre></div>` : ""}
+              ${t.userPrompt ? `<div style="margin-bottom:8px"><div style="font-size:10px;color:var(--text-muted);font-weight:600;margin-bottom:3px">用户提示</div><pre style="font-size:11px;font-family:var(--font-mono);background:var(--bg);padding:8px;border-radius:4px;overflow-x:auto;white-space:pre-wrap;max-height:120px;overflow-y:auto;margin:0;color:var(--text-secondary)">${esc((t.userPrompt || "").substring(0, 800))}${(t.userPrompt || "").length > 800 ? "…" : ""}</pre></div>` : ""}
+              ${t.response ? `<div><div style="font-size:10px;color:var(--text-muted);font-weight:600;margin-bottom:3px">响应</div><pre style="font-size:11px;font-family:var(--font-mono);background:var(--bg);padding:8px;border-radius:4px;overflow-x:auto;white-space:pre-wrap;max-height:160px;overflow-y:auto;margin:0;color:var(--text-secondary)">${esc((t.response || "").substring(0, 1200))}${(t.response || "").length > 1200 ? "…" : ""}</pre></div>` : ""}
             </div>
           </details>`;
           }
@@ -21794,10 +21794,10 @@
           html += "</div>";
           container.innerHTML =
             html ||
-            '<p style="color:var(--text-muted);font-size:12px;padding:8px 0">No details available for this run.</p>';
+            '<p style="color:var(--text-muted);font-size:12px;padding:8px 0">暂无运行详情。</p>';
         } catch {
           container.innerHTML =
-            '<p style="color:var(--red);font-size:12px;padding:8px 0">Failed to load run details.</p>';
+            '<p style="color:var(--red);font-size:12px;padding:8px 0">加载运行详情失败。</p>';
         }
       }
 
