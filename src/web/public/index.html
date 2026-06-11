@@ -17559,7 +17559,7 @@
           const s = document.getElementById("automations-status");
           if (s) {
             s.className = "settings-status ok";
-            s.textContent = "✓ Complete";
+            s.textContent = "✓ 完成";
             setTimeout(() => (s.textContent = ""), 3000);
           }
           if (type === "observer") {
@@ -20375,7 +20375,7 @@
               if (inProgress) {
                 statusHtml = `<span class="pipe-status-badge running">⟳ 处理中</span>`;
               } else if (run.result) {
-                statusHtml = `<span class="pipe-status-badge success">✓ Complete</span>`;
+                statusHtml = `<span class="pipe-status-badge success">✓ 完成</span>`;
               }
 
               let metricsHtml = "";
@@ -20383,14 +20383,14 @@
                 metricsHtml = `<div style="display:flex;gap:16px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border-subtle)">
               <div style="text-align:center">
                 <div style="font-size:16px;font-weight:600;color:var(--green)">${run.result.pagesCreated}</div>
-                <div style="font-size:10px;color:var(--text-muted)">pages</div>
+                <div style="font-size:10px;color:var(--text-muted)">页面</div>
               </div>
               <div style="text-align:center">
                 <div style="font-size:16px;font-weight:600;color:var(--accent)">${run.result.linksAdded}</div>
-                <div style="font-size:10px;color:var(--text-muted)">links</div>
+                <div style="font-size:10px;color:var(--text-muted)">链接</div>
               </div>
               <div style="flex:1"></div>
-              ${run.hasSummary || run.hasLLMTrace ? `<button class="btn-sm" onclick="showRunDetail('${run.id}')" style="align-self:center">What the AI Did</button>` : ""}
+              ${run.hasSummary || run.hasLLMTrace ? `<button class="btn-sm" onclick="showRunDetail('${run.id}')" style="align-self:center">查看 AI 操作</button>` : ""}
             </div>`;
               }
 
@@ -20516,15 +20516,20 @@
             const data = await uploadFileWithFallback(file);
             if (barEl) barEl.style.width = "100%";
             if (data && statusEl) {
-              statusEl.className = "upload-queue-status done";
-              statusEl.textContent = data.pagesUpdated > 0 ? `✓ ${data.pagesUpdated} pages` : "✓ Done";
-              anySuccess = true;
+              if (data.rejected || data.ingestError) {
+                statusEl.className = "upload-queue-status error";
+                statusEl.textContent = data.rejectionReason || data.ingestError || "失败";
+              } else {
+                statusEl.className = "upload-queue-status done";
+                statusEl.textContent = data.pagesUpdated > 0 ? `✓ ${data.pagesUpdated} 页` : "✓ 完成";
+              }
+              if (data.pagesUpdated > 0) anySuccess = true;
             } else if (!data && statusEl) {
               statusEl.className = "upload-queue-status error";
-              statusEl.textContent = "Skipped";
+              statusEl.textContent = "已跳过";
             }
           } catch (err) {
-            if (statusEl) { statusEl.className = "upload-queue-status error"; statusEl.textContent = "Error"; }
+            if (statusEl) { statusEl.className = "upload-queue-status error"; statusEl.textContent = "错误"; }
             if (barEl) barEl.style.width = "0%";
           }
         }
