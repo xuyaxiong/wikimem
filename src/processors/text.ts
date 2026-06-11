@@ -1,5 +1,5 @@
-import { readFileSync } from 'node:fs';
 import { basename, extname } from 'node:path';
+import { readTextFile } from '../core/file-encoding.js';
 
 export interface ProcessedText {
   title: string;
@@ -8,7 +8,7 @@ export interface ProcessedText {
 }
 
 export function processText(filePath: string): ProcessedText {
-  const content = readFileSync(filePath, 'utf-8');
+  const content = readTextFile(filePath);
   const title = basename(filePath, extname(filePath));
   const wordCount = content.split(/\s+/).filter(Boolean).length;
 

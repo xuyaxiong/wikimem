@@ -1,5 +1,6 @@
 import express from 'express';
 import { readFileSync, existsSync, writeFileSync, mkdirSync, readdirSync, statSync, renameSync, unlinkSync as fsUnlinkSync, chmodSync, rmSync, copyFileSync } from 'node:fs';
+import { readTextFile } from '../core/file-encoding.js';
 import { join, resolve, extname, basename, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { randomBytes } from 'node:crypto';
@@ -653,7 +654,7 @@ export function createServer(vaultRoot: string, port: number): void {
       }
       const textExts = ['.md', '.txt', '.csv', '.json', '.yaml', '.yml', '.xml', '.html', '.htm', '.ts', '.js', '.py', '.go', '.rs'];
       if (textExts.includes(ext) || ext === '') {
-        const content = readFileSync(resolved, 'utf-8');
+        const content = readTextFile(resolved);
         res.json({ type: 'text', content, filename: decoded });
         return;
       }

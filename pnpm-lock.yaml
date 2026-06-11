@@ -35,6 +35,9 @@ importers:
       gray-matter:
         specifier: ^4.0.3
         version: 4.0.3
+      iconv-lite:
+        specifier: ^0.7.2
+        version: 0.7.2
       mammoth:
         specifier: ^1.12.0
         version: 1.12.0
@@ -66,6 +69,9 @@ importers:
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
+      '@types/iconv-lite':
+        specifier: ^0.0.1
+        version: 0.0.1
       '@types/node':
         specifier: ^22.0.0
         version: 22.19.17
@@ -634,6 +640,10 @@ packages:
 
   '@types/http-errors@2.0.5':
     resolution: {integrity: sha512-r8Tayk8HJnX0FztbZN7oVqGccWgw98T/0neJphO91KkmOzug1KkofZURD4UaD5uH8AqcFLfdPErnBod0u71/qg==}
+
+  '@types/iconv-lite@0.0.1':
+    resolution: {integrity: sha512-SsRBQxGw7/2/NxYJfBdiUx5a7Ms/voaUhOO9u2y9FTeTNBO1PXohzE4i3JfD8q2Te42HLTn5pyZtDf8j1bPKgQ==}
+    deprecated: This is a stub types definition for iconv-lite (https://github.com/ashtuchkin/iconv-lite). iconv-lite provides its own type definitions, so you don\'t need @types/iconv-lite installed!
 
   '@types/node-cron@3.0.11':
     resolution: {integrity: sha512-0ikrnug3/IyneSHqCBeslAhlK2aBfYek1fGo4bP4QnZPmiqSGRK+Oy7ZMisLWkesffJvQ1cqAcBnJC+8+nxIAg==}
@@ -1973,6 +1983,10 @@ snapshots:
       '@types/serve-static': 2.2.0
 
   '@types/http-errors@2.0.5': {}
+
+  '@types/iconv-lite@0.0.1':
+    dependencies:
+      '@types/node': 22.19.17
 
   '@types/node-cron@3.0.11': {}
 

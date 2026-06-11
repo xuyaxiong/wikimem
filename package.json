@@ -58,6 +58,7 @@
     "discord.js": "^14.26.3",
     "express": "^5.2.1",
     "gray-matter": "^4.0.3",
+    "iconv-lite": "^0.7.2",
     "mammoth": "^1.12.0",
     "node-cron": "^3.0.3",
     "openai": "^4.80.0",
@@ -70,6 +71,7 @@
   "devDependencies": {
     "@types/adm-zip": "^0.5.8",
     "@types/express": "^5.0.6",
+    "@types/iconv-lite": "^0.0.1",
     "@types/node": "^22.0.0",
     "@types/node-cron": "^3.0.11",
     "@types/pdf-parse": "^1.1.5",

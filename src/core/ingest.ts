@@ -7,6 +7,7 @@ import { readWikiPage, writeWikiPage, writeWikiPageVersioned, listWikiPages, slu
 import { updateIndex } from './index-manager.js';
 import { appendLog } from './log-manager.js';
 import { getPrompt } from './pipeline-prompts.js';
+import { readTextFile } from './file-encoding.js';
 import { processText } from '../processors/text.js';
 import { processUrl } from '../processors/url.js';
 import { isImageFile, processImage } from '../processors/image.js';
@@ -174,7 +175,7 @@ async function _ingestSourceInner(
           break;
         }
         default:
-          content = readFileSync(source, 'utf-8');
+          content = readTextFile(source);
           title = basename(source, ext);
       }
     }
