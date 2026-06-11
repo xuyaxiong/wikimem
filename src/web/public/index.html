@@ -19403,6 +19403,8 @@
       });
       document.body.addEventListener("dragover", (e) => e.preventDefault());
       document.body.addEventListener("drop", (e) => {
+        // Skip if already handled by a more specific dropzone (pipeline, sidebar, etc.)
+        if (e.target.closest('#pipe-dropzone, #sidebar-drop-zone')) return;
         e.preventDefault();
         if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files);
       });

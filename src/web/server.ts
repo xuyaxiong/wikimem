@@ -4200,9 +4200,13 @@ export function createServer(vaultRoot: string, port: number): void {
   });
 
   // POST /api/wiki/reset — wipe wiki-derived data, restore to fresh-init state
-  app.post('/api/wiki/reset', (_req, res) => {
+  app.post('/api/wiki/reset', async (_req, res) => {
     try {
       const deleted: string[] = [];
+
+      // Clear in-memory pipeline runs before deleting files
+      const { pipelineEvents } = await import('../core/pipeline-events.js');
+      pipelineEvents.clearRuns();
 
       for (const dir of ['wiki', 'raw', '.wikimem', '.wikimem-cache']) {
         const p = join(vaultRoot, dir);

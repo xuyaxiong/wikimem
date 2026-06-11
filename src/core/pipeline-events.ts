@@ -1,5 +1,5 @@
 import { EventEmitter } from 'node:events';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
 export type PipelineStep =
@@ -204,6 +204,17 @@ class PipelineEventBus extends EventEmitter {
 
   getCurrentRun(): PipelineRun | null {
     return this.currentRun;
+  }
+
+  /** Clear all in-memory runs and delete the persisted file. */
+  clearRuns(): void {
+    this.runs = [];
+    this.currentRun = null;
+    if (this.persistPath && existsSync(this.persistPath)) {
+      try {
+        rmSync(this.persistPath, { force: true });
+      } catch { /* non-fatal */ }
+    }
   }
 }
 
